@@ -1,0 +1,64 @@
+.form{
+    position: relative;
+    display: grid;
+  place-items: center;  /* Centre tout à la fois horizontalement et verticalement */
+  height: 40vh;    
+}
+.label {
+    font-size: 14px;
+    align-self: baseline;
+}
+
+.input {
+    padding: 10px 10px;
+    border-radius: 20px;
+    width: 50%;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  }
+  
+  .textarea {
+    width: 90%;
+    height: 150px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .textarea:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  }
+  
+  .createArticleBtn {
+    position: relative;
+    background-color: rgb(235, 173, 59);  
+    color: white;                
+    border: none;                
+    border-radius: 8px;          
+    padding: 12px 20px;          
+    font-size: 16px;             
+    cursor: pointer;            
+    transition: background-color 0.3s ease, transform 0.3s ease;  
+  }
+  
+  .createArticleBtn:hover {
+    background-color: #45a049;  
+    transform: scale(1.05);      
+  }
+  
+  .createArticleBtn:focus {
+    outline: none;              
+    box-shadow: 0 0 5px rgba(72, 182, 124, 0.7); 
+  }
+  
+  .createArticleBtn:active {
+    background-color: #388e3c;  
+  }
