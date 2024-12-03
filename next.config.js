@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["encrypted-tbn0.gstatic.com"], // Ajoute les domaines autorisés
+    domains: ["encrypted-tbn0.gstatic.com","parisjetaime.com","www.myurbanexperience.com"], // Ajoute les domaines autorisés
   },
 };
 

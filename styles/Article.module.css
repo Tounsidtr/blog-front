@@ -35,7 +35,7 @@
   
   /* Liste des articles dans l'écran principal */
   .articleList {
-    margin-top: 20px;
+    margin-top: 0px;
   }
   
   .articleList ul {
@@ -56,4 +56,59 @@
     background-color: #e0e0e0;  /* Changer la couleur au survol */
   }
   
+  /* Style du bouton Supprimer */
+.delete-button {
+  background-color: #e60000;  /* Couleur de fond rouge vif */
+  color: #fff;  /* Couleur du texte blanche */
+  border: none;  /* Pas de bordure */
+  padding: 10px 20px;  /* Espacement autour du texte */
+  font-size: 16px;  /* Taille de la police */
+  font-weight: bold;  /* Police en gras */
+  cursor: pointer;  /* Curseur en forme de main */
+  border-radius: 4px;  /* Coins arrondis */
+  transition: background-color 0.3s, transform 0.2s;  /* Animation pour le survol et le clic */
+  margin: 10px 0;  /* Marge verticale */
+}
+
+/* Effet de survol : changement de couleur et légère mise en relief */
+.delete-button:hover {
+  background-color: #cc0000;  /* Changement de couleur de fond au survol */
+  transform: scale(1.05);  /* Agrandissement du bouton */
+}
+
+/* Effet de clic : réduction de taille pour simuler un clic */
+.delete-button:active {
+  transform: scale(0.98);  /* Réduit légèrement la taille au clic */
+}
+
+/* Style du bouton Edit/Annuler */
+.edit-button {
+  background-color: #0073e6;  /* Couleur de fond bleu clair pour Edit */
+  color: #fff;  /* Texte en blanc */
+  border: none;  /* Pas de bordure */
+  padding: 10px 20px;  /* Espacement autour du texte */
+  font-size: 16px;  /* Taille de la police */
+  font-weight: bold;  /* Texte en gras */
+  cursor: pointer;  /* Curseur en forme de main */
+  border-radius: 4px;  /* Coins arrondis */
+  transition: background-color 0.3s, transform 0.2s;  /* Animation pour le survol et le clic */
+  margin: 10px 0;  /* Marge verticale */
+  margin-right: 20px;
+}
+
+/* Effet de survol pour Edit */
+.edit-button:hover {
+  background-color: #005bb5;  /* Changement de couleur de fond pour un bleu plus foncé */
+  transform: scale(1.05);  /* Agrandissement au survol */
+}
+
+/* Effet de clic */
+.edit-button:active {
+  transform: scale(0.98);  /* Réduction de la taille lors du clic */
+}
+
+/* Style spécifique pour Annuler */
+.edit-button.cancel {
+  background-color: #e60000;  /* Couleur de fond rouge vif pour Annuler */
+}
   

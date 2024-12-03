@@ -1,21 +1,22 @@
 import styles from "../styles/FormComponent.module.css";
 import { useForm } from "react-hook-form";
 
-function FormComponent({ handleChange, newArticle }) {
+function FormComponent({ action, articleToEdit, handleChange, newArticle, handleSubmitArticle }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset: resetConnectForm,
   } = useForm({
     mode: "onBlur",
   });
-  const signup= (data)=>{
-console.log(data);
 
-  }
+  const onSubmit = (data) => {
+    console.log("Formulaire soumis avec ces données : ", data);
+    handleSubmitArticle(data); // Soumettre directement les données au parent
+  };
+
   return (
-    <form onSubmit={handleSubmit(signup)}  className={styles.form}>
+    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
       <div>
         <label htmlFor="title" className={styles.label}></label>
         <input
@@ -25,6 +26,7 @@ console.log(data);
           required
           className={styles.input}
           placeholder="Titre"
+          defaultValue={articleToEdit.title !== "" ? articleToEdit.title : ""}
           {...register("title", { required: "Le titre est requis" })}
         />
         {errors.title && <span>{errors.title.message}</span>}
@@ -38,6 +40,7 @@ console.log(data);
           required
           className={styles.input}
           placeholder="Image"
+          defaultValue={articleToEdit.imageUrl !== "" ? articleToEdit.imageUrl : ""}
           {...register("imageUrl", {
             required: "L'URL de l'image est requise",
           })}
@@ -52,12 +55,13 @@ console.log(data);
           required
           className={styles.textarea}
           placeholder="Description"
+          defaultValue={articleToEdit.content !== "" ? articleToEdit.content : ""}
           {...register("content", { required: "Le contenu est requis" })}
         />
         {errors.content && <span>{errors.content.message}</span>}
       </div>
       <button type="submit" className={styles.createArticleBtn}>
-        Créer l'article
+        {action === 'post' ? "Créer" : "Modifier"} l'article
       </button>
     </form>
   );

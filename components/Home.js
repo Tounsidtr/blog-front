@@ -1,125 +1,230 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../styles/Home.module.css";
+import { useDispatch, useSelector } from "react-redux";
 import Article from "./Article";
-import FormComponent from "../components/FormComponent";
-import Link from "next/link";
+import FormComponent from "./FormComponent";
+import { logout } from "../reducers/user";
+import { useRouter } from "next/router";
+import { addArticle, setArticles } from "../reducers/articles";
+import Cookies from "js-cookie";  // Import de js-cookie
 
 export default function Home() {
-  const [articles, setArticles] = useState([]);
+  const dispatch = useDispatch();
+  const articles = useSelector((state) => state.articles.articles);
+
+  const [action, setAction] = useState("")
+  const [articleToEdit, setArticleToEdit] = useState({});
+
+  // useEffect(() => {
+  //   console.log("ARTICLES => ", articles);
+  //   articles.map(article => console.log(article)
+  //   )
+  // }, [articles])
+
+
+
   const [showForm, setShowForm] = useState(false);
   const [newArticle, setNewArticle] = useState({
     title: "",
     content: "",
-    imageUrl: "", // Ajout d'un champ pour l'URL de l'image
+    imageUrl: "",
   });
+  const [isUserConnected, setIsUserConnected] = useState(false);
+  const [username, setUsername] = useState("");
+  const router = useRouter();
+  const user = useSelector(state => state.user.value);
+
+  useEffect(() => {
+    const checkUserConnection = async () => {
+      const token = Cookies.get("jwt");  // Récupérer le token depuis les cookies
+
+      try {
+        const res = await fetch("http://localhost:3001/articles", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+          credentials: "include",  // Si vous avez des cookies de session à envoyer
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+
+          dispatch(addArticle(data.data))
+          if (data.isAuthenticated) {
+            setIsUserConnected(true);
+            setUsername(data.username);
+          } else {
+            setIsUserConnected(false);
+          }
+        } else {
+          setIsUserConnected(false);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification de la connexion :", error);
+        setIsUserConnected(false);
+      }
+
+    };
+
+    checkUserConnection();
+  }, []);
 
   const toggleForm = () => {
-    setShowForm(!showForm);
+    setArticleToEdit({ title: "", content: "", imageUrl: "" })
+    setAction("post")
+    if (action === "post") {
+
+      setShowForm(!showForm);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmitArticle = async (articleData) => {
+    const token = Cookies.get("jwt");  // Utilisation de Cookies.get pour récupérer le token
+    console.log("Token récupéré:", token);
 
-    // Ajouter l'article avec l'URL de l'image
-    setArticles([
-      ...articles,
-      {
-        id: articles.length + 1,
-        title: newArticle.title,
-        content: newArticle.content,
-        imageUrl: newArticle.imageUrl, // Stocker l'URL de l'image
-      },
-    ]);
+    if (!user.isConnected) {
+      alert("Vous devez être connecté pour créer un article.");
+      return;
+    }
 
-    // Réinitialiser le formulaire
-    setNewArticle({
-      title: "",
-      content: "",
-      imageUrl: "", // Réinitialiser l'URL de l'image
-    });
-    setShowForm(false);
+    const newArticleData = {
+      title: articleData.title,
+      content: articleData.content,
+      imageUrl: articleData.imageUrl,
+
+    };
+    console.log(newArticleData);
+
+
+    try {
+      if (action === "post") {
+        const res = await fetch("http://localhost:3001/articles/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+
+          },
+          credentials: "include",
+          body: JSON.stringify(newArticleData),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          dispatch(addArticle(data.data));  // Ajouter l'article à Redux
+          setNewArticle({ title: "", content: "", imageUrl: "" });
+          setShowForm(false);
+        } else {
+          const errorData = await res.json();
+          console.error("Erreur lors de la création de l'article : ", errorData);
+        }
+
+      } else {
+        const res = await fetch(`http://localhost:3001/articles/${articleToEdit.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+
+          },
+          credentials: "include",
+          body: JSON.stringify(newArticleData),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          dispatch(addArticle(data.data));  // Ajouter l'article à Redux
+          setNewArticle({ title: "", content: "", imageUrl: "" });
+          setArticleToEdit({ title: "", content: "", imageUrl: "" })
+          setShowForm(false);
+        } else {
+          const errorData = await res.json();
+          console.error("Erreur lors de la création de l'article : ", errorData);
+        }
+      }
+    } catch (error) {
+      console.error("Erreur réseau lors de la création de l'article :", error);
+    }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewArticle({
-      ...newArticle,
-      [name]: value,
-    });
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("http://localhost:3001/users/logout", {
+        method: "POST",
+        credentials: "include",  // Assurez-vous d'envoyer les cookies
+      });
+
+      if (res.ok) {
+        setIsUserConnected(false);
+        dispatch(logout());
+        Cookies.remove("jwt");  // Supprimer le cookie jwt
+        router.push("/logIn");
+      } else {
+        console.error("Erreur lors de la déconnexion");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error);
+    }
   };
 
-  // async function handleLogout() {
-  //   const res = await fetch("http://localhost:3000/users/logout", {
-  //     method: "POST",
-  //     credentials: "include",
-  //   });
-  //   const data = await res.json();
-  //   if (data.success) {
-  //     setisUserConnected(false);
-  //   }
-  //   // dispatch(logout());
-  // }
-  const [isUserConnected, setisUserConnected] = useState(false);
   return (
     <div>
-      {/* En-tête avec le titre */}
       <header className={styles.header}>
         <h1 className={styles.titleContainer}>Blog Of The Street</h1>
         <div>
-          {!isUserConnected ? (
-            <>
-              <Link href="/logIn">
-                <button className={styles.logBtn}> Se connecter</button>
-              </Link>
-              <p>ou</p>
-              <Link href="/register">
-                <button className={styles.logBtn}> S'incrire</button>
-              </Link>
-            </>
+          {user.isConnected ? (
+            <div>
+              <p>Bienvenue {username} !</p>
+              <button onClick={handleLogout} className={styles.logoutBtn}>
+                Se déconnecter
+              </button>
+            </div>
           ) : (
-            <button className={styles.logoutBtn}> Se deconnecter</button>
+            <div>
+              <button onClick={() => router.push("/logIn")} className={styles.logBtn}>
+                Se connecter
+              </button>
+              <button onClick={() => router.push("/register")} className={styles.logBtn}>
+                S'inscrire
+              </button>
+            </div>
           )}
         </div>
       </header>
 
-      {/* Image d'arrière-plan */}
-      <div className={styles.imageContainer}>
-        <img
-          src="https://i0.wp.com/www.amalgallery.com/wp-content/uploads/2024/08/street-art-bombe-aerosol-amal-gallery-art-blog.jpg?resize=1024%2C585&ssl=1/1920x400"
-          alt="Description de l'image"
-          className={styles.fullWidthImage}
-        />
-        <div className={styles.overlayText}>
-          <h2>Laissez Parler Votre Art</h2>
-          <p>
-            Partagez et découvrez les articles les plus inspirants de la rue.
-          </p>
-        </div>
-      </div>
-      <div className={styles.divider}></div>
-
-      {/* Contenu principal sous l'en-tête */}
       <div className={styles.mainContent}>
         <button onClick={toggleForm} className={styles.mainContentBtn}>
-          {showForm ? "Annuler la création" : "Créer un article"}
+          {showForm && action == "post" ? "Annuler la création" : "Créer un article"}
         </button>
+
         {showForm && (
-          <FormComponent handleChange={handleChange} newArticle={newArticle} />
+          <FormComponent articleToEdit={articleToEdit} action={action} handleSubmitArticle={handleSubmitArticle} />
         )}
 
-        {/* Affichage des articles créés */}
         <div>
           <h2>Liste des articles :</h2>
-          <div className={styles.articleList}>
-            {articles.map((article) => (
-              <Article
-                key={article.id}
-                title={article.title}
-                content={article.content}
-                imageUrl={article.imageUrl} // Passer l'URL de l'image
-              />
-            ))}
-          </div>
+          {articles.length > 0 ? (
+            <div className={styles.articleList}>
+              {articles.map((article) => (
+                <Article
+                  key={article._id}
+                  id={article._id}
+                  authorId={article.author._id}
+                  title={article.title}
+                  author={article.author?.username}
+                  content={article.content}
+                  imageUrl={article.image}
+                  setAction={setAction}
+                  action={action}
+                  setArticleToEdit={setArticleToEdit}
+                  articleToEdit={articleToEdit}
+                  setShowForm={setShowForm}
+                  showForm={showForm}
+                />
+              ))}
+            </div>
+          ) : (
+            <p>Aucun article disponible.</p>
+          )}
         </div>
       </div>
     </div>

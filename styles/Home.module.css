@@ -133,9 +133,22 @@
   }
 }
 
-.logBtn{
-  margin-right: 20px;
-  cursor: pointer;
+.logBtn {
+  background: none; /* Pas de fond */
+  color: #131921; /* Couleur du texte (gris foncé) */
+  border: none; /* Pas de bordure */
+  font-size: 16px; /* Taille de police */
+  font-weight: bold; /* Police en gras */
+  cursor: pointer; /* Curseur en forme de main */
+  padding: 10px 20px; /* Espacement autour du texte */
+  transition: color 0.3s, text-decoration 0.3s; /* Animation douce pour la couleur et le texte */
+  margin-right: 20px; /* Marges à droite */
+}
+
+/* Effet de survol */
+.logBtn:hover {
+  color: #0073bb; /* Couleur du texte au survol (bleu clair) */
+  text-decoration: underline; /* Souligner le texte au survol */
 }
 .signUpBtn{
   margin-left: 40px;
@@ -148,7 +161,23 @@
   background-color: rgb(22, 22, 22); 
   margin: 15px 15px 15px 250px;
 }
+.logoutBtn{
+  background: none; /* Pas de fond */
+  color: #131921; /* Couleur du texte (gris foncé) */
+  border: none; /* Pas de bordure */
+  font-size: 16px; /* Taille de police */
+  font-weight: bold; /* Police en gras */
+  cursor: pointer; /* Curseur en forme de main */
+  padding: 10px 20px; /* Espacement autour du texte */
+  transition: color 0.3s, text-decoration 0.3s; /* Animation douce pour la couleur et le texte */
+  margin-right: 20px; /* Marges à droite */
+}
 
+/* Effet de survol */
+.logoutBtn:hover {
+  color: #0073bb; /* Couleur du texte au survol (bleu clair) */
+  text-decoration: underline; /* Souligner le texte au survol */
+}
 
 
 
